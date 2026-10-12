@@ -4,6 +4,7 @@ Test basic environment and transition matrix.
 
 import os
 import sys
+import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sokoban_env.sokoban_pull_env import SokobanPullEnv
@@ -31,9 +32,14 @@ def test_basic_env():
     P, R = env.get_transition_model()
     print(f"\nTransition Model extracted successfully!")
     print(f"P shape: {P.shape}, R shape: {R.shape}")
-    print(f"Sum of probabilities for all (s, a): {P.sum(axis=-1).min()} to {P.sum(axis=-1).max()}")
-    assert P.sum(axis=-1).min() == 1.0, "All transition probabilities must sum to 1.0!"
-    assert P.sum(axis=-1).max() == 1.0, "All transition probabilities must sum to 1.0!"
+    # In an episodic MDP, terminal transitions have sum=0.0 (no future bootstrap)
+    # and non-terminal transitions have sum=1.0.
+    row_sums = P.sum(axis=-1)
+    terminal_transitions = (row_sums == 0.0)
+    non_terminal_transitions = (row_sums == 1.0)
+    assert np.all(terminal_transitions | non_terminal_transitions), "All rows must sum to either 1.0 (non-terminal) or 0.0 (terminal)!"
+    print(f"Non-terminal transitions: {np.sum(non_terminal_transitions)} (sum=1.0)")
+    print(f"Terminal transitions: {np.sum(terminal_transitions)} (sum=0.0, correctly zero-bootstrapped)")
     print("ALL BASIC ENV TESTS PASSED!")
 
 

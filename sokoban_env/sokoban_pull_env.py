@@ -230,9 +230,17 @@ class SokobanPullEnv(gym.Env):
         else:
             ar, ac, br, bc, pull_avail, hook_used = state
 
-        # If already at goal, terminal absorbing state
+        # If already at goal or permanent deadlock, terminal absorbing state
         if (br, bc) == self.goal_pos:
             return state, 0.0, True, False, {"is_solved": True, "event": "terminal_goal"}
+        if self.deadlock_detector.is_permanent_deadlock(
+            (br, bc),
+            pull_avail,
+            hook_used=hook_used,
+            agent_pos=(ar, ac),
+            hook_pos=self.hook_pos,
+        ):
+            return state, 0.0, True, False, {"is_solved": False, "event": "terminal_deadlock"}
 
         agent_pos = (ar, ac)
         box_pos = (br, bc)
@@ -307,7 +315,13 @@ class SokobanPullEnv(gym.Env):
             event = "goal_reached"
 
         # Check Deadlock condition
-        elif self.deadlock_detector.is_permanent_deadlock(box_pos, pull_avail):
+        elif self.deadlock_detector.is_permanent_deadlock(
+            box_pos,
+            pull_avail,
+            hook_used=hook_used,
+            agent_pos=agent_pos,
+            hook_pos=self.hook_pos,
+        ):
             reward = self.deadlock_penalty
             terminated = True
             event = "deadlock"
@@ -329,6 +343,8 @@ class SokobanPullEnv(gym.Env):
         """
         Extracts full Transition Matrix P[s, a, s'] and Reward Matrix R[s, a]
         for Model-Based Dynamic Programming (Chapters 2, 3, 4).
+        Terminal transitions zero out future states (P[s, a, :] = 0) to prevent
+        erroneous bootstrapping past episode termination (Goal or Deadlock).
         """
         num_s = self.num_states
         num_a = self.num_actions
@@ -339,9 +355,11 @@ class SokobanPullEnv(gym.Env):
         for s_idx, state in enumerate(self.all_states):
             for a in range(num_a):
                 next_st, r, terminated, _, _ = self.simulate_step(state, a)
-                next_idx = self.state_to_idx(next_st)
-                P[s_idx, a, next_idx] = 1.0
                 R[s_idx, a] = r
+                if not terminated:
+                    next_idx = self.state_to_idx(next_st)
+                    P[s_idx, a, next_idx] = 1.0
+                # If terminated, P[s_idx, a, :] remains 0.0 (no future bootstrapping)
 
         return P, R
 

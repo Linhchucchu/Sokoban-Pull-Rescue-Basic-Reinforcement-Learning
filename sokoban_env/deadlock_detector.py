@@ -3,7 +3,8 @@ Deadlock detector for Sokoban environments.
 Detects corner deadlocks and line deadlocks.
 """
 
-from typing import Set, Tuple
+from typing import Set, Tuple, Optional
+from collections import deque
 import numpy as np
 
 
@@ -35,14 +36,67 @@ class DeadlockDetector:
                     corners.add((r, c))
         return corners
 
-    def is_permanent_deadlock(self, box_pos: Tuple[int, int], pull_available: int = 0) -> bool:
+    def can_agent_reach_hook(
+        self,
+        agent_pos: Tuple[int, int],
+        hook_pos: Tuple[int, int],
+        box_pos: Tuple[int, int],
+    ) -> bool:
         """
-        Check if box is in a deadlock.
-        If pull_available > 0, corner is NOT permanent deadlock because agent can pull box out.
-        If pull_available == 0, corner is permanent deadlock.
+        Check if the agent can reach the hook position without passing through
+        walls or the box's current blocked position.
+        """
+        if agent_pos == hook_pos:
+            return True
+        queue = deque([agent_pos])
+        visited = {agent_pos, box_pos}
+        while queue:
+            curr = queue.popleft()
+            if curr == hook_pos:
+                return True
+            r, c = curr
+            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < self.height and 0 <= nc < self.width:
+                    if not self.walls[nr, nc] and (nr, nc) not in visited:
+                        visited.add((nr, nc))
+                        queue.append((nr, nc))
+        return False
+
+    def is_permanent_deadlock(
+        self,
+        box_pos: Tuple[int, int],
+        pull_available: int = 0,
+        hook_used: int = 1,
+        agent_pos: Optional[Tuple[int, int]] = None,
+        hook_pos: Optional[Tuple[int, int]] = None,
+    ) -> bool:
+        """
+        Check if box is in an unrecoverable permanent deadlock.
+        1. If box is in Goal -> NOT deadlock.
+        2. If box is not in a corner deadlock -> NOT corner deadlock.
+        3. If box is in a corner:
+           - If pull_available > 0: NOT permanent deadlock (agent can pull box out).
+           - If pull_available == 0:
+             - If Hook is available (hook_pos is not None, hook_used == 0) and reachable:
+               NOT permanent deadlock (agent can walk to Hook, recharge pull, and rescue box).
+             - Otherwise: PERMANENT DEADLOCK.
         """
         if box_pos in self.goals:
             return False
+        if box_pos not in self.corner_deadlocks:
+            return False
+
+        # Box is in a corner deadlock
         if pull_available > 0:
             return False
-        return box_pos in self.corner_deadlocks
+
+        # pull_available == 0: check if agent can recharge via Hook
+        if hook_pos is not None and hook_used == 0:
+            if agent_pos is not None:
+                if self.can_agent_reach_hook(agent_pos, hook_pos, box_pos):
+                    return False
+            else:
+                return False
+
+        return True

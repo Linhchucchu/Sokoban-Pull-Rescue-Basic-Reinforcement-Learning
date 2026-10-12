@@ -73,16 +73,21 @@ class MonteCarloControl:
         total_return = sum(r for _, _, r in episode)
         is_solved = self.env.is_solved
 
+        # Compute first-visit timestep for each state-action pair
+        first_visits = {}
+        if self.first_visit:
+            for t, (s, a, _) in enumerate(episode):
+                if (s, a) not in first_visits:
+                    first_visits[(s, a)] = t
+
         G = 0.0
-        visited = set()
         # Traverse in reverse
         for t in reversed(range(len(episode))):
             s_t, a_t, r_t = episode[t]
             G = r_t + self.gamma * G
 
-            if self.first_visit and (s_t, a_t) in visited:
+            if self.first_visit and t != first_visits[(s_t, a_t)]:
                 continue
-            visited.add((s_t, a_t))
 
             self.N[s_t, a_t] += 1
             if self.alpha is None:

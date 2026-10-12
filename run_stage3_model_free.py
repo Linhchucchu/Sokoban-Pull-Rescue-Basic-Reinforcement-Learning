@@ -6,6 +6,7 @@ Compares SARSA vs Q-Learning, plots learning curves, and extracts snapshots at 1
 
 import os
 import sys
+import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -152,7 +153,33 @@ def run_stage3():
     print(f"   Time: {esarsa_res['elapsed_time']:.2f}s | Final success rate: {np.mean(esarsa_res['success'][-500:])*100:.1f}%")
 
     # -------------------------------------------------------------
-    # 4. VISUALIZE PROGRESSION AT SNAPSHOTS (10, 100, 500, 5000)
+    # 4. MODEL-FREE TABULAR RL ON 7X7 HOOK MAP (|S| = 5,328, |A| = 5)
+    # -------------------------------------------------------------
+    print("\n" + "-" * 60)
+    print("PART 4: Model-Free Q-Learning on 7x7 Hook Map (|S| = 5,328, |A| = 5)")
+    print("-" * 60)
+    map_7x7 = os.path.join(PROJECT_ROOT, "maps", "map_7x7_hook.txt")
+    env_7x7 = SokobanPullEnv(map_7x7, mode="special")
+    
+    num_episodes_7x7 = 10000
+    print(f"Training Q-Learning on 7x7 Hook Map ({num_episodes_7x7} episodes)...")
+    ql_7x7 = TemporalDifferenceControl(
+        env_7x7,
+        algo="q_learning",
+        gamma=0.9,
+        alpha=0.1,
+        epsilon_start=1.0,
+        epsilon_min=0.05,
+        epsilon_decay=0.9995,
+    )
+    ql_7x7_res = ql_7x7.train(num_episodes=num_episodes_7x7, log_interval=2000)
+    succ_7x7 = np.mean(ql_7x7_res["success"][-500:]) * 100
+    steps_7x7 = np.mean(ql_7x7_res["lengths"][-500:])
+    ret_7x7 = np.mean(ql_7x7_res["returns"][-500:])
+    print(f"   7x7 Q-Learning Success: {succ_7x7:.1f}% | Steps: {steps_7x7:.1f} | Return: {ret_7x7:.1f}")
+
+    # -------------------------------------------------------------
+    # 5. VISUALIZE PROGRESSION AT SNAPSHOTS (10, 100, 500, 5000)
     # -------------------------------------------------------------
     print("\nVisualizing Q-Learning progression at 10, 100, 500, and 5,000 episodes (David Silver Style)...")
     viz = DavidSilverVisualizer(env_5x5)
