@@ -1,0 +1,5 @@
+configuration,category,step_penalty,goal_reward,deadlock_penalty,pull_cost,vi_iterations,policy_diff_states,policy_diff_pct,pull_action_states,success_rate_pct,mean_steps,mean_return
+"Standard (R_step=-1, R_dl=-20)",Optimal Baseline,-1.0,100.0,-20.0,-0.5,183,0,0.0,12,100.0,21.23,79.56
+Zero Step Penalty (R_step=0),Degenerate (No Urgency),0.0,100.0,-20.0,-0.5,183,0,0.0,12,100.0,21.32,99.8
+Severe Deadlock (R_dl=-60),Overly Risk-Averse,-1.0,100.0,-60.0,-0.5,193,0,0.0,12,100.0,21.18,79.6
+Heavy Pull Cost (R_pull=-15.0),Rescue-Frugal Detour,-1.0,100.0,-20.0,-15.0,183,170,6.05,8,99.8,21.47,78.44
