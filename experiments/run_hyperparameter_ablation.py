@@ -113,7 +113,7 @@ def run_ablation():
 
     plt.suptitle(r"Episode Budget $N$ Scaling: Training Time vs Solution Quality", fontsize=9.8, weight="bold", y=0.98)
     plt.tight_layout()
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         ep_plot = os.path.join(PROJECT_ROOT, folder, "ablation_episodes_scaling.png")
         os.makedirs(os.path.dirname(ep_plot), exist_ok=True)
         plt.savefig(ep_plot, dpi=300, bbox_inches="tight")
@@ -147,7 +147,7 @@ def run_ablation():
         rmse = float(np.sqrt(np.mean((agent.Q - oracle_Q) ** 2))) if oracle_Q is not None else 0.0
         print(f"   alpha = {a:4.2f} -> Final 500-ep Success: {succ:5.1f}% | RMSE: {rmse:5.2f} | Time: {res['elapsed_time']:.2f}s")
 
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         alpha_plot = os.path.join(PROJECT_ROOT, folder, "ablation_learning_rate_comparison.png")
         os.makedirs(os.path.dirname(alpha_plot), exist_ok=True)
         LearningCurveVisualizer.plot_comparison_curves(
@@ -184,7 +184,7 @@ def run_ablation():
         succ = np.mean(res["success"][-500:]) * 100
         print(f"   eps_decay = {d:6.4f} -> Final 500-ep Success: {succ:5.1f}% | Time: {res['elapsed_time']:.2f}s")
 
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         decay_plot = os.path.join(PROJECT_ROOT, folder, "ablation_epsilon_decay_comparison.png")
         os.makedirs(os.path.dirname(decay_plot), exist_ok=True)
         LearningCurveVisualizer.plot_comparison_curves(

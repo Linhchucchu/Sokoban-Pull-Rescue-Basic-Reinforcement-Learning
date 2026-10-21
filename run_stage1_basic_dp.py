@@ -78,7 +78,7 @@ def run_stage1():
     plt.title(r"Bellman Error Convergence ($\gamma = 0.9$)", fontsize=9.2, weight="bold")
     plt.grid(True, which="both", ls="--", alpha=0.5)
     plt.legend(fontsize=8.0)
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         p = os.path.join(PROJECT_ROOT, folder, "bellman_error_convergence.png")
         os.makedirs(os.path.dirname(p), exist_ok=True)
         plt.savefig(p, dpi=300, bbox_inches="tight")
@@ -105,8 +105,8 @@ def run_stage1():
     print("-" * 60)
     dp = DynamicProgramming(P, R, gamma=gamma)
 
-    # 1. Value Iteration
-    vi_res = dp.value_iteration(theta=1e-7)
+    # 1. Value Iteration (theta = 1e-6 for 133 iterations)
+    vi_res = dp.value_iteration(theta=1e-6)
     print(f"1. Value Iteration (VI):")
     print(f"   Iterations: {vi_res['num_iterations']}")
     print(f"   Total Bellman backups: {vi_res['total_backups']}")
@@ -161,7 +161,7 @@ def run_stage1():
     selected_iters = [0, 1, 2, 3, min(5, max_k), min(10, max_k), max_k]
     selected_iters = sorted(list(set(selected_iters)))
 
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         ds_plot_path = os.path.join(PROJECT_ROOT, folder, "david_silver_value_iteration.png")
         os.makedirs(os.path.dirname(ds_plot_path), exist_ok=True)
         viz.plot_david_silver_iterations(
@@ -190,7 +190,7 @@ def run_stage1():
     plt.ylim(0, max(backups) * 1.15)
     plt.grid(axis="y", ls="--", alpha=0.4)
     plt.tight_layout()
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         comp_plot_path = os.path.join(PROJECT_ROOT, folder, "dp_algorithms_comparison.png")
         os.makedirs(os.path.dirname(comp_plot_path), exist_ok=True)
         plt.savefig(comp_plot_path, dpi=300, bbox_inches="tight")

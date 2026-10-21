@@ -28,7 +28,8 @@ class DynamicProgramming:
         """
         Q(s, a) = R(s, a) + gamma * sum_{s'} P(s'|s,a) * V(s')
         """
-        expected_future = np.einsum("san,n->sa", self.P, V)
+        P_flat = self.P.reshape(-1, self.num_states)
+        expected_future = (P_flat @ V).reshape(self.num_states, self.num_actions)
         return self.R + self.gamma * expected_future
 
     def extract_greedy_policy(self, Q: np.ndarray) -> np.ndarray:
@@ -110,15 +111,19 @@ class DynamicProgramming:
             total_eval_steps += 1
             history_V.append(V.copy())
 
-            # 2. Policy Improvement
+            # 2. Policy Improvement (with tolerance to avoid oscillation on ties)
             Q = self.compute_q_table(V)
-            new_policy = np.argmax(Q, axis=1)
-            history_pi.append(new_policy.copy())
+            current_Q = Q[np.arange(self.num_states), policy]
+            best_Q = np.max(Q, axis=1)
+            improvable = (best_Q - current_Q) > 1e-9
 
             # Check stability
-            if np.array_equal(new_policy, policy):
-                policy = new_policy
+            if not np.any(improvable):
                 break
+
+            new_policy = policy.copy()
+            new_policy[improvable] = np.argmax(Q[improvable], axis=1)
+            history_pi.append(new_policy.copy())
             policy = new_policy
 
         elapsed = time.perf_counter() - start_time

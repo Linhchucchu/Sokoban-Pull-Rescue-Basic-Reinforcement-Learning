@@ -1,5 +1,5 @@
-configuration,category,step_penalty,goal_reward,deadlock_penalty,pull_cost,vi_iterations,policy_diff_states,policy_diff_pct,pull_action_states,success_rate_pct,mean_steps,mean_return
-"Standard (R_step=-1, R_dl=-20)",Optimal Baseline,-1.0,100.0,-20.0,-0.5,183,0,0.0,12,100.0,21.23,79.56
-Zero Step Penalty (R_step=0),Degenerate (No Urgency),0.0,100.0,-20.0,-0.5,183,0,0.0,12,100.0,21.32,99.8
-Severe Deadlock (R_dl=-60),Overly Risk-Averse,-1.0,100.0,-60.0,-0.5,193,0,0.0,12,100.0,21.18,79.6
-Heavy Pull Cost (R_pull=-15.0),Rescue-Frugal Detour,-1.0,100.0,-20.0,-15.0,183,170,6.05,8,99.8,21.47,78.44
+configuration,category,step_penalty,goal_reward,deadlock_penalty,pull_cost,vi_iterations,policy_diff_states,policy_diff_pct,pull_action_states,trajectory_steps,trajectory_pulls,trajectory_return,solved
+"Standard (R_step=-1, R_dl=-20, R_pull=-0.5)",Optimal Baseline,-1.0,100.0,-20.0,-0.5,154,0,0.0,31,31,2,69.0,True
+"Zero Step Penalty (R_step=0, R_dl=-20, R_pull=-0.5)",Degenerate (No Urgency),0.0,100.0,-20.0,-0.5,53,0,0.0,31,31,2,99.0,True
+"Severe Deadlock (R_step=-1, R_dl=-60, R_pull=-0.5)",Overly Risk-Averse,-1.0,100.0,-60.0,-0.5,154,0,0.0,31,31,2,69.0,True
+"Heavy Pull Cost (R_step=-1, R_dl=-20, R_pull=-15.0)",Pull-Frugal Detour,-1.0,100.0,-20.0,-15.0,154,236,3.78,18,37,1,49.0,True

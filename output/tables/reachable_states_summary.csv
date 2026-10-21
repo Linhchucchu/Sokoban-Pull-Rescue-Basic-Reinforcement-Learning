@@ -1,0 +1,6 @@
+setting,map,mode,actions,represented_states,non_terminal_reachable,unreachable_or_terminal,reachable_pct
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,4,600,504,96,84.0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,5,2808,910,1898,32.407407407407405
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,5,5328,2232,3096,41.891891891891895
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,5,6240,1950,4290,31.25
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,5,6240,4877,1363,78.15705128205128

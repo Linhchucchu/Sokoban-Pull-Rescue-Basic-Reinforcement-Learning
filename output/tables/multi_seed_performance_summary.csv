@@ -1,0 +1,7 @@
+algorithm,episodes,online_success_mean,online_success_std,online_return_mean,online_return_std,greedy_solved_pct,greedy_steps_mean,greedy_steps_std,greedy_return_mean,greedy_return_std,greedy_pulls_mean
+Q-Learning,5000,0.04,0.09,-107.58,0.1,0.0,100.0,0.0,-118.3,40.36,18.6
+Q-Learning,10000,0.08,0.11,-106.66,0.2,0.0,100.0,0.0,-100.3,0.27,0.6
+Q-Learning,30000,96.28,0.64,60.33,1.12,100.0,31.0,0.0,69.0,0.0,2.0
+SARSA,5000,0.0,0.0,-107.88,0.07,0.0,100.0,0.0,-100.5,0.0,1.0
+SARSA,10000,0.12,0.18,-106.87,0.17,0.0,100.0,0.0,-100.5,0.0,1.0
+SARSA,30000,97.24,1.24,60.35,3.41,100.0,32.6,3.6,67.4,3.58,2.0

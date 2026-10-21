@@ -79,7 +79,7 @@ def run_stage2():
     # Plot 2D Slice comparison: pull=1 vs pull=0
     print("\nGenerating 2D Slice comparison plot: pull_available = 1 vs pull_available = 0...")
     viz_hook = DavidSilverVisualizer(env_hook)
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         slice_plot_path = os.path.join(PROJECT_ROOT, folder, "slice_comparison_pull_vs_nopull.png")
         os.makedirs(os.path.dirname(slice_plot_path), exist_ok=True)
         viz_hook.plot_slice_comparison(

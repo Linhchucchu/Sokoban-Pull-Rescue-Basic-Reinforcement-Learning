@@ -35,13 +35,13 @@ from visualization.ieee_style import apply_ieee_style, IEEE_DOUBLE_COL_WIDTH
 def run_reward_ablation():
     apply_ieee_style()
     print("=" * 80)
-    print("REWARD CONFIGURATION ABLATION STUDY")
+    print("REWARD CONFIGURATION ABLATION STUDY (DILEMMA MAP)")
     print("=" * 80)
 
-    map_path = os.path.join(PROJECT_ROOT, "maps", "map_6x6_rescue.txt")
+    map_path = os.path.join(PROJECT_ROOT, "maps", "map_7x7_dilemma.txt")
 
     configs = {
-        "Standard (R_step=-1, R_dl=-20)": {
+        "Standard (R_step=-1, R_dl=-20, R_pull=-0.5)": {
             "step_penalty": -1.0,
             "goal_reward": 100.0,
             "deadlock_penalty": -20.0,
@@ -50,7 +50,7 @@ def run_reward_ablation():
             "ls": "-",
             "category": "Optimal Baseline",
         },
-        "Zero Step Penalty (R_step=0)": {
+        "Zero Step Penalty (R_step=0, R_dl=-20, R_pull=-0.5)": {
             "step_penalty": 0.0,
             "goal_reward": 100.0,
             "deadlock_penalty": -20.0,
@@ -59,7 +59,7 @@ def run_reward_ablation():
             "ls": "--",
             "category": "Degenerate (No Urgency)",
         },
-        "Severe Deadlock (R_dl=-60)": {
+        "Severe Deadlock (R_step=-1, R_dl=-60, R_pull=-0.5)": {
             "step_penalty": -1.0,
             "goal_reward": 100.0,
             "deadlock_penalty": -60.0,
@@ -68,14 +68,14 @@ def run_reward_ablation():
             "ls": "-.",
             "category": "Overly Risk-Averse",
         },
-        "Heavy Pull Cost (R_pull=-15.0)": {
+        "Heavy Pull Cost (R_step=-1, R_dl=-20, R_pull=-15.0)": {
             "step_penalty": -1.0,
             "goal_reward": 100.0,
             "deadlock_penalty": -20.0,
             "pull_cost": -15.0,
             "color": "#1B4D3E",
             "ls": ":",
-            "category": "Rescue-Frugal Detour",
+            "category": "Pull-Frugal Detour",
         },
     }
 
@@ -86,11 +86,10 @@ def run_reward_ablation():
     num_states = base_env.num_states
     print(f"   [+] State space size: |S| = {num_states}, Action space size: |A| = {base_env.num_actions}")
 
-    num_episodes = 6000
-    td_results = {}
     dp_results = {}
+    rollout_results = {}
 
-    print("\n2. Executing Value Iteration and Q-Learning across reward configurations:")
+    print("\n2. Executing Value Iteration across reward configurations:")
     for name, cfg in configs.items():
         env = SokobanPullEnv(
             map_path,
@@ -114,38 +113,43 @@ def run_reward_ablation():
         dp_results[name] = vi
         v_min, v_max = vi["V"].min(), vi["V"].max()
 
-        # Q-Learning Model-Free
-        agent = TemporalDifferenceControl(
-            env,
-            algo="q_learning",
-            gamma=0.9,
-            alpha=0.1,
-            epsilon_start=1.0,
-            epsilon_min=0.05,
-            epsilon_decay=0.9995,
-        )
-        res = agent.train(num_episodes=num_episodes, log_interval=2000)
-        td_results[name] = res
+        # Rollout optimal policy
+        obs, info = env.reset()
+        traj_steps = 0
+        traj_ret = 0.0
+        traj_pulls = 0
+        done = False
+        while not done and traj_steps < 100:
+            a = vi["policy"][info["state_idx"]]
+            if a == 4:
+                traj_pulls += 1
+            obs, r, term, trunc, info = env.step(a)
+            traj_steps += 1
+            traj_ret += r
+            done = term or trunc
 
-        final_succ = np.mean(res["success"][-500:]) * 100
-        final_steps = np.mean(res["lengths"][-500:])
-        final_ret = np.mean(res["returns"][-500:])
+        rollout_results[name] = {
+            "steps": traj_steps,
+            "pulls": traj_pulls,
+            "return": traj_ret,
+            "solved": env.is_solved,
+        }
 
         print(f"   [+] {name}")
         print(f"       VI Iterations: {vi['num_iterations']:3d} | V* Range: [{v_min:6.1f}, {v_max:6.1f}]")
-        print(f"       Success Rate:  {final_succ:5.1f}% | Mean Steps: {final_steps:5.1f} | Mean Return: {final_ret:6.1f}")
+        print(f"       Trajectory:    Steps={traj_steps} | Pulls={traj_pulls} | Return={traj_ret:.1f} | Solved={env.is_solved}")
 
     # -------------------------------------------------------------------------
     # Policy Divergence Analysis
     # -------------------------------------------------------------------------
-    std_key = "Standard (R_step=-1, R_dl=-20)"
+    std_key = "Standard (R_step=-1, R_dl=-20, R_pull=-0.5)"
     pi_std = dp_results[std_key]["policy"]
 
     print("\n" + "=" * 80)
     print("POLICY DIVERGENCE & ACTION DISTRIBUTION ANALYSIS")
     print("=" * 80)
-    print(f"{'Configuration':<38} | {'Diff States':<11} | {'Diff %':<7} | {'PULL States':<11} | {'Assessment'}")
-    print("-" * 105)
+    print(f"{'Configuration':<42} | {'Diff States':<11} | {'Diff %':<7} | {'PULL States':<11} | {'Steps':<6} | {'Pulls':<6} | {'Assessment'}")
+    print("-" * 115)
 
     summary_rows = []
     for name, cfg in configs.items():
@@ -154,12 +158,10 @@ def run_reward_ablation():
         diff_pct = (diff_count / num_states) * 100.0
         pull_states = int(np.sum(pi_curr == 4))
 
-        final_succ = float(np.mean(td_results[name]["success"][-500:]) * 100)
-        final_steps = float(np.mean(td_results[name]["lengths"][-500:]))
-        final_ret = float(np.mean(td_results[name]["returns"][-500:]))
+        ro = rollout_results[name]
         vi_iters = int(dp_results[name]["num_iterations"])
 
-        print(f"{name:<38} | {diff_count:11d} | {diff_pct:6.1f}% | {pull_states:11d} | {cfg['category']}")
+        print(f"{name:<42} | {diff_count:11d} | {diff_pct:6.1f}% | {pull_states:11d} | {ro['steps']:6d} | {ro['pulls']:6d} | {cfg['category']}")
 
         summary_rows.append({
             "configuration": name,
@@ -172,9 +174,10 @@ def run_reward_ablation():
             "policy_diff_states": diff_count,
             "policy_diff_pct": round(diff_pct, 2),
             "pull_action_states": pull_states,
-            "success_rate_pct": round(final_succ, 2),
-            "mean_steps": round(final_steps, 2),
-            "mean_return": round(final_ret, 2),
+            "trajectory_steps": ro["steps"],
+            "trajectory_pulls": ro["pulls"],
+            "trajectory_return": round(ro["return"], 2),
+            "solved": ro["solved"],
         })
 
     # Save summary table to CSV
@@ -197,62 +200,61 @@ def run_reward_ablation():
     print("\n2. Generating IEEE Publication Plot: ablation_reward_configurations.png...")
     fig, axes = plt.subplots(1, 3, figsize=(IEEE_DOUBLE_COL_WIDTH, 2.7))
 
-    def smooth(vals, w=200):
-        if len(vals) < w:
-            return vals
-        cumsum = np.cumsum(np.insert(vals, 0, 0))
-        smoothed = (cumsum[w:] - cumsum[:-w]) / w
-        pad = np.full(w - 1, smoothed[0])
-        return np.concatenate((pad, smoothed))
+    cfg_labels = ["Standard", "Zero Step", "Severe DL", "Heavy Pull"]
+    cfg_names = list(configs.keys())
 
-    # Panel (a): Rolling Success Rate (%)
+    # Panel (a): Policy Alteration & Rescue Pull States
     ax0 = axes[0]
-    for name, cfg in configs.items():
-        res = td_results[name]
-        succ_rate = smooth(np.array(res["success"], dtype=float) * 100, w=300)
-        ax0.plot(succ_rate, label=name, color=cfg["color"], linestyle=cfg["ls"], linewidth=1.3)
-    ax0.set_xlabel("Episode", fontsize=8.5)
-    ax0.set_ylabel("Success Rate (%)", fontsize=8.5)
-    ax0.set_title("(a) Convergence Rate", fontsize=9.0, weight="normal")
-    ax0.grid(True, ls="--", alpha=0.4)
-    ax0.set_ylim(-5, 105)
+    x = np.arange(len(cfg_labels))
+    width = 0.35
+    pull_counts = [int(np.sum(dp_results[k]["policy"] == 4)) for k in cfg_names]
+    diff_pcts = [(int(np.sum(dp_results[k]["policy"] != pi_std)) / num_states) * 100.0 for k in cfg_names]
 
-    # Panel (b): Steps to Goal
+    b1 = ax0.bar(x - width/2, pull_counts, width, label="PULL States (|S_pull|)", color="#003366")
+    ax0_twin = ax0.twinx()
+    b2 = ax0_twin.bar(x + width/2, diff_pcts, width, label="Policy Diff (%)", color="#B22222", alpha=0.85)
+
+    ax0.set_xticks(x)
+    ax0.set_xticklabels(cfg_labels, fontsize=7.5)
+    ax0.set_ylabel("States choosing PULL", fontsize=8.0, color="#003366")
+    ax0_twin.set_ylabel("Policy Divergence (%)", fontsize=8.0, color="#B22222")
+    ax0.set_title("(a) Policy Shift & Pull Allocation", fontsize=8.5, weight="normal")
+    ax0.grid(True, ls="--", alpha=0.3, axis="y")
+    ax0.set_ylim(0, 36)
+    ax0_twin.set_ylim(0, 6)
+
+    # Panel (b): Trajectory Navigation & Detour Trade-off
     ax1 = axes[1]
-    for name, cfg in configs.items():
-        res = td_results[name]
-        steps_smooth = smooth(res["lengths"], w=300)
-        ax1.plot(steps_smooth, label=name, color=cfg["color"], linestyle=cfg["ls"], linewidth=1.3)
-    ax1.set_xlabel("Episode", fontsize=8.5)
-    ax1.set_ylabel("Steps to Goal", fontsize=8.5)
-    ax1.set_title("(b) Navigation Efficiency", fontsize=9.0, weight="normal")
-    ax1.grid(True, ls="--", alpha=0.4)
+    traj_steps = [rollout_results[k]["steps"] for k in cfg_names]
+    traj_pulls = [rollout_results[k]["pulls"] for k in cfg_names]
+
+    b3 = ax1.bar(x - width/2, traj_steps, width, label="Optimal Steps", color="#1B4D3E")
+    ax1_twin = ax1.twinx()
+    b4 = ax1_twin.bar(x + width/2, traj_pulls, width, label="Rescue Pulls Used", color="#D95F02", alpha=0.85)
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(cfg_labels, fontsize=7.5)
+    ax1.set_ylabel("Steps to Goal", fontsize=8.0, color="#1B4D3E")
+    ax1_twin.set_ylabel("Pulls Executed", fontsize=8.0, color="#D95F02")
+    ax1.set_title("(b) Navigation & Detour Trade-off", fontsize=8.5, weight="normal")
+    ax1.grid(True, ls="--", alpha=0.3, axis="y")
+    ax1.set_ylim(0, 45)
+    ax1_twin.set_ylim(0, 3)
 
     # Panel (c): VI Bellman Residual Decay
     ax2 = axes[2]
     for name, cfg in configs.items():
         errs = dp_results[name]["errors"]
-        ax2.plot(errs, label=name, color=cfg["color"], linestyle=cfg["ls"], linewidth=1.3)
+        short_lbl = name.split(" (")[0]
+        ax2.plot(errs, label=short_lbl, color=cfg["color"], linestyle=cfg["ls"], linewidth=1.3)
     ax2.set_yscale("log")
-    ax2.set_xlabel("Iteration", fontsize=8.5)
-    ax2.set_ylabel(r"Bellman Error $\|V_{k+1} - V_k\|_\infty$", fontsize=8.5)
-    ax2.set_title("(c) DP Contraction Stability", fontsize=9.0, weight="normal")
-    ax2.grid(True, which="both", ls="--", alpha=0.4)
-
-    # Global legend at bottom
-    handles, labels = ax0.get_legend_handles_labels()
-    fig.legend(
-        handles,
-        labels,
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.15),
-        ncol=2,
-        fontsize=7.5,
-        framealpha=0.9,
-    )
+    ax2.set_xlabel("Iteration", fontsize=8.0)
+    ax2.set_ylabel(r"Bellman Error $\|V_{k+1} - V_k\|_\infty$", fontsize=8.0)
+    ax2.set_title("(c) DP Contraction Stability", fontsize=8.5, weight="normal")
+    ax2.grid(True, which="both", ls="--", alpha=0.3)
+    ax2.legend(fontsize=7.0, loc="upper right")
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.25)
 
     # Save to figures/ and output/
     save_path = os.path.join(PROJECT_ROOT, "figures", "ablation_reward_configurations.png")
@@ -262,14 +264,8 @@ def run_reward_ablation():
 
     # Mirror copy
     dest_out = os.path.join(PROJECT_ROOT, "output", "plots", "ablation_reward_configurations.png")
-    dest_fig = os.path.join(PROJECT_ROOT, "figure", "ablation_reward_configurations.png")
-    dest_brain = r"C:\Users\Admin\.gemini\antigravity\brain\dba0cb62-f2af-4952-a4c4-089a0280f93e\ablation_reward_configurations.png"
-    for d in [dest_out, dest_fig, dest_brain]:
-        try:
-            os.makedirs(os.path.dirname(d), exist_ok=True)
-            shutil.copyfile(save_path, d)
-        except Exception:
-            pass
+    os.makedirs(os.path.dirname(dest_out), exist_ok=True)
+    shutil.copyfile(save_path, dest_out)
 
     print(f"[+] Saved high-resolution IEEE plot to: {save_path}")
     print("=" * 80)

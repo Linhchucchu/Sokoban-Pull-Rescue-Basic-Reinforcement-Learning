@@ -116,7 +116,41 @@ def test_dilemma_optimal_vs_failure():
     assert opt_steps == 31, f"Expected 31 steps, got {opt_steps}"
     assert np.isclose(opt_return, 69.0), f"Expected return +69.0, got {opt_return}"
     print(f"    PASSED: Optimal policy solves Dilemma in {opt_steps} steps with return +{opt_return:.2f}.")
-    print("            Premature early pull leads to unrecoverable deadlock (return -20.0 or timeout -100.0).")
+
+    # Rollout Pull-ASAP policy (pull at first opportunity at step 5, then follow Q*)
+    obs, info = env.reset(seed=42)
+    asap_return = 0.0
+    asap_steps = 0
+    done = False
+    pulled_first = False
+    first_pull_step = -1
+
+    while not done and asap_steps < 100:
+        s = info["state_idx"]
+        state = env.all_states[s]
+        ar, ac, br, bc, pull_avail, hook_used = state
+        dr, dc = br - ar, bc - ac
+        is_adj = (abs(dr) + abs(dc) == 1)
+        back_r, back_c = ar - dr, ac - dc
+        can_pull = (pull_avail == 1 and is_adj and 0 <= back_r < env.height and 0 <= back_c < env.width and not env.walls[back_r, back_c])
+
+        if not pulled_first and can_pull:
+            a = 4  # PULL ASAP
+            pulled_first = True
+            first_pull_step = asap_steps + 1
+        else:
+            a = int(res["policy"][s])
+
+        obs, r, term, trunc, info = env.step(a)
+        asap_return += r
+        asap_steps += 1
+        done = term or trunc
+
+    assert env.is_solved, "Pull-ASAP policy must solve Dilemma map!"
+    assert first_pull_step == 5, f"Expected first pull at step 5, got {first_pull_step}"
+    assert asap_steps == 39, f"Expected 39 steps for Pull-ASAP, got {asap_steps}"
+    assert np.isclose(asap_return, 61.0), f"Expected return +61.0, got {asap_return}"
+    print(f"    PASSED: Pull-ASAP verified: first pull at step {first_pull_step}, {asap_steps} steps, return +{asap_return:.2f} (8-unit drop).")
 
 
 if __name__ == "__main__":

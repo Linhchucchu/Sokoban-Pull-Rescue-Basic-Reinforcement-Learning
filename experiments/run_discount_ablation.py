@@ -58,7 +58,7 @@ def run_discount_ablation():
     plt.title(r"Value Iteration Convergence vs Discount Factor $\gamma$", fontsize=9.2, weight="bold")
     plt.grid(True, which="both", ls="--", alpha=0.5)
     plt.legend(fontsize=7.5)
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         dp_gamma_plot = os.path.join(PROJECT_ROOT, folder, "dp_gamma_convergence.png")
         os.makedirs(os.path.dirname(dp_gamma_plot), exist_ok=True)
         plt.savefig(dp_gamma_plot, dpi=300, bbox_inches="tight")
@@ -74,7 +74,7 @@ def run_discount_ablation():
         succ_final = np.mean(res["success"][-500:]) * 100
         print(f"   gamma = {g:4.2f} -> Final 500-ep Success: {succ_final:.1f}% | Time: {res['elapsed_time']:.2f}s")
 
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         td_gamma_plot = os.path.join(PROJECT_ROOT, folder, "td_gamma_ablation_comparison.png")
         os.makedirs(os.path.dirname(td_gamma_plot), exist_ok=True)
         LearningCurveVisualizer.plot_comparison_curves(

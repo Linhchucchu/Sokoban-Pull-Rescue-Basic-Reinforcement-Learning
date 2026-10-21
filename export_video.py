@@ -191,7 +191,7 @@ if __name__ == "__main__":
     parser.add_argument("--cell_size", type=int, default=72, help="Grid cell size in pixels")
     parser.add_argument("--hold_frames", type=int, default=6, help="Extra hold frames for final screen")
     parser.add_argument("--output_dir", type=str, default="output/videos", help="Directory to save videos")
-    parser.add_argument("--artifact_dir", type=str, default=r"C:\Users\Admin\.gemini\antigravity\brain\dba0cb62-f2af-4952-a4c4-089a0280f93e", help="Artifact directory to copy GIF")
+    parser.add_argument("--artifact_dir", type=str, default=None, help="Optional artifact directory to copy GIF")
     args = parser.parse_args()
 
     export_gameplay(

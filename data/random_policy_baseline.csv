@@ -1,0 +1,2 @@
+total_episodes,solved_count,solved_pct,timeout_count,timeout_pct,deadlock_count,deadlock_pct,mean_return,std_return,mean_steps,std_steps
+20000,0,0.0,19996,99.98,4,0.02,-119.8065,3.986083008418164,99.9964,0.2974677125336463

@@ -76,7 +76,7 @@ def plot_all_maps():
     fig.suptitle("Topic 15: Benchmark Suite of 9 Diverse Map Topologies (5 Settings + 4 Geometric Variants)", fontsize=11.0, weight="normal", y=0.98)
     plt.tight_layout(rect=[0, 0, 1, 0.96])
 
-    for folder in ["figures", "figure", os.path.join("output", "plots"), "C:/Users/Admin/.gemini/antigravity/brain/dba0cb62-f2af-4952-a4c4-089a0280f93e"]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         os.makedirs(folder, exist_ok=True)
         out_path = os.path.join(folder, "maps_all_settings_overview.png")
         plt.savefig(out_path, dpi=300, bbox_inches="tight")

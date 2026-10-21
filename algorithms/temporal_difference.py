@@ -77,10 +77,10 @@ class TemporalDifferenceControl:
         if np.random.rand() < self.epsilon:
             return np.random.randint(self.num_actions)
         q_s = self.Q[s]
-        max_v = np.max(q_s)
-        # Random tie-breaking among best actions
-        best_acts = np.where(q_s == max_v)[0]
-        return np.random.choice(best_acts)
+        # Fast tie-breaking: if all equal (unvisited), pick random action; else argmax
+        if np.all(q_s == q_s[0]):
+            return np.random.randint(self.num_actions)
+        return int(np.argmax(q_s))
 
     def train(
         self,

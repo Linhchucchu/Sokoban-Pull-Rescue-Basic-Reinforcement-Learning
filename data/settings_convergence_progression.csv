@@ -1,0 +1,61 @@
+setting,map,mode,seed,episodes,greedy_solved,greedy_steps,greedy_return,greedy_pulls
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,42,250,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,42,500,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,42,1000,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,100,250,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,100,500,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,100,1000,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,2024,250,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,2024,500,True,9,92.0,0
+Setting 1 (5x5 Basic),map_5x5_basic.txt,basic,2024,1000,True,9,92.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,42,500,False,100,-100.5,1
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,42,1000,False,100,-100.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,42,2000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,42,3000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,42,5000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,100,500,False,100,-100.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,100,1000,False,100,-100.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,100,2000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,100,3000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,100,5000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,2024,500,False,100,-100.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,2024,1000,False,100,-100.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,2024,2000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,2024,3000,True,20,81.0,0
+Intermediate (6x6 Rescue),map_6x6_rescue.txt,special,2024,5000,True,20,81.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,42,1000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,42,2000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,42,3000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,42,5000,True,25,76.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,42,10000,True,25,76.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,100,1000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,100,2000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,100,3000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,100,5000,True,25,76.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,100,10000,True,25,76.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,2024,1000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,2024,2000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,2024,3000,False,100,-100.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,2024,5000,True,25,76.0,0
+Setting 2 (7x7 Deadcorners),map_7x7_deadcorners.txt,special,2024,10000,True,25,76.0,0
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,42,5000,False,100,-100.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,42,10000,False,100,-100.0,0
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,42,15000,True,37,63.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,42,30000,True,37,63.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,100,5000,False,100,-100.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,100,10000,False,100,-100.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,100,15000,True,37,63.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,100,30000,True,37,63.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,2024,5000,False,100,-100.0,0
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,2024,10000,False,100,-100.0,0
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,2024,15000,True,37,63.5,1
+Setting 3 (7x7 Dilemma No-Hook),map_7x7_dilemma_nohook.txt,special,2024,30000,True,37,63.5,1
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,42,5000,False,100,-100.0,0
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,42,10000,False,100,-100.5,1
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,42,30000,True,31,69.0,2
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,100,5000,False,100,-190.5,91
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,100,10000,False,100,-100.5,1
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,100,30000,True,31,69.0,2
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,2024,5000,False,100,-100.5,1
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,2024,10000,False,100,-100.0,0
+Setting 4 (7x7 Dilemma Hook),map_7x7_dilemma.txt,special,2024,30000,True,31,69.0,2

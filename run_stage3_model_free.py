@@ -64,7 +64,7 @@ def run_stage3():
     plt.grid(True, ls="--", alpha=0.4)
     plt.legend(framealpha=0.85, fontsize=7.5)
     plt.tight_layout()
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         sa_plot_path = os.path.join(PROJECT_ROOT, folder, "robbins_monro_convergence.png")
         os.makedirs(os.path.dirname(sa_plot_path), exist_ok=True)
         plt.savefig(sa_plot_path, dpi=300, bbox_inches="tight")
@@ -188,7 +188,7 @@ def run_stage3():
     hist_V = [ql_res["snapshots"][ep]["V"] for ep in snapshot_eps]
     hist_pi = [ql_res["snapshots"][ep]["policy"] for ep in snapshot_eps]
 
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         prog_plot_path = os.path.join(PROJECT_ROOT, folder, "q_learning_progression_100_5000_opt.png")
         os.makedirs(os.path.dirname(prog_plot_path), exist_ok=True)
         viz.plot_david_silver_iterations(
@@ -209,7 +209,7 @@ def run_stage3():
         "SARSA": sarsa_res,
         "Expected SARSA": esarsa_res,
     }
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         curve_plot_path = os.path.join(PROJECT_ROOT, folder, "td_learning_curves_comparison.png")
         os.makedirs(os.path.dirname(curve_plot_path), exist_ok=True)
         LearningCurveVisualizer.plot_comparison_curves(

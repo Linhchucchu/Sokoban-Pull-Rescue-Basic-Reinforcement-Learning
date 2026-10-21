@@ -129,7 +129,7 @@ def run_1m(total_episodes=None):
 
     plt.suptitle(rf"Tabular Q-Learning Scaling Experiment ({total_episodes:,} Episodes) on Setting 4", fontsize=9.8, weight="bold", y=0.98)
     plt.tight_layout()
-    for folder in ["figures", "figure", os.path.join("output", "plots")]:
+    for folder in ["figures", os.path.join("output", "plots")]:
         plot_path = os.path.join(PROJECT_ROOT, folder, "q_learning_1m_episodes_scaling.png")
         os.makedirs(os.path.dirname(plot_path), exist_ok=True)
         plt.savefig(plot_path, dpi=300, bbox_inches="tight")

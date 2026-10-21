@@ -49,9 +49,11 @@ class SokobanPullEnv(gym.Env):
         deadlock_penalty: float = -20.0,
         invalid_pull_penalty: float = -1.0,
         pull_cost: float = -0.5,
+        render_mode: Optional[str] = None,
     ):
         super().__init__()
         self.mode = mode
+        self.render_mode = render_mode
         self.max_steps = max_steps
         self.step_penalty = step_penalty
         self.goal_reward = goal_reward
